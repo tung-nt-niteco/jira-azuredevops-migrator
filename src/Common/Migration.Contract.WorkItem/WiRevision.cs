@@ -1,0 +1,83 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+
+namespace Migration.Contract.WorkItem
+{
+    public enum ReferenceChangeType
+    {
+        Added,
+        Removed
+    }
+
+    public enum TemplateType
+    {
+        Scrum,
+        Agile,
+        CMMI
+    }
+
+    public static class WorkItemType
+    {
+        public static string ProductBacklogItem => "Product Backlog Item";
+        public static string UserStory => "User Story";
+        public static string Requirement => "Requirement";
+        public static string Bug => "Bug";
+        public static string Task => "Task";
+        public static string Epic => "Epic";
+        public static string Feature => "Feature";
+
+        public static List<string> GetWorkItemTypes(string[] notForValues = null)
+        {
+            var list = new List<string>();
+            var properties = typeof(WorkItemType).GetProperties();
+            foreach (var prop in properties)
+            {
+                var propertyValue = prop.GetValue(typeof(WorkItemType)).ToString();
+                if (notForValues != null)
+                {
+                    foreach (var value in notForValues)
+                    {
+                        if (propertyValue != value)
+                        {
+                            list.Add(propertyValue);
+                        }
+                    }
+                }
+                else
+                {
+                    list.Add(propertyValue);
+                }
+            }
+            return list;
+        }
+    }
+
+    public class WiRevision
+    {
+        public WiRevision()
+        {
+            Fields = new List<WiField>();
+            Links = new List<WiLink>();
+            Attachments = new List<WiAttachment>();
+        }
+
+        [JsonIgnore]
+        public string ParentOriginId { get; set; }
+        public string Author { get; set; }
+        public DateTime Time { get; set; } = DateTime.Now;
+        public int Index { get; set; } = 1;
+        public List<WiField> Fields { get; set; }
+        public List<WiLink> Links { get; set; }
+        public List<WiAttachment> Attachments { get; set; }
+
+        [DefaultValue(false)]
+        public bool AttachmentReferences { get; set; } = false;
+
+        public override string ToString()
+        {
+            return $"'{ParentOriginId}', rev {Index}";
+        }
+    }
+}

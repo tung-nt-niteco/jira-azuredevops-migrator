@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>jira_export</RootNamespace>
+    <ApplicationIcon />
+    <StartupObject />
+    <Copyright>Copyright (c) Solidify</Copyright>
+    <Product>Jira Exporter</Product>
+    <Company />
+    <Authors />
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="jirastyles.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="jirastyles.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Atlassian.SDK" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Migration.Common\Migration.Common.csproj" />
+    <ProjectReference Include="..\..\Common\Migration.Contract.WorkItem\Migration.Contract.WorkItem.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

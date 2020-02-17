@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net471</TargetFrameworks>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+    <Copyright>Copyright (c) Solidify</Copyright>
+    <Product>Work Item Importer</Product>
+    <Company />
+    <Authors />
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.11.0" />
+    <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
+    <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="16.153.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Migration.Common.Log\Migration.Common.Log.csproj" />
+    <ProjectReference Include="..\..\Common\Migration.Common\Migration.Common.csproj" />
+    <ProjectReference Include="..\..\Common\Migration.Contract.WorkItem\Migration.Contract.WorkItem.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>
