@@ -855,12 +855,26 @@ namespace WorkItemImport
             foreach (var att in wiItem.Revisions.SelectMany(r => r.Attachments.Where(a => a.Change == ReferenceChangeType.Added)))
             {
                 var fileName = att.FilePath.Split('\\')?.Last() ?? string.Empty;
-                if (textField.Contains(fileName))
+                //2021-02-22: Yeronimo fixed bug: Image with space in name failed to display after import.
+                //var splitfileName = fileName.Split(' ');
+                //if (textField.Contains(fileName) || textField.Contains(string.Join("+", splitfileName)))
+                //2021-06-23: Kookabura fixed bug: Image with space in name failed to display after import.
+                //Ref: https://github.com/solidify/jira-azuredevops-migrator/issues/267
+                //Ref: https://github.com/solidify/jira-azuredevops-migrator/issues/225
+                //Ref: https://github.com/solidify/jira-azuredevops-migrator/issues/226
+                //Ref (related?): https://github.com/solidify/jira-azuredevops-migrator/issues/200
+                //Ref: https://github.com/solidify/jira-azuredevops-migrator/pull/327
+                var encodedFileName = System.Web.HttpUtility.UrlEncode(fileName);
+                if (textField.Contains(fileName) || textField.IndexOf(encodedFileName, StringComparison.OrdinalIgnoreCase) >= 0 || textField.Contains("_thumb_" + att.AttOriginId))                
                 {
                     var tfsAtt = IdentifyAttachment(att, wi);
 
                     if (tfsAtt != null)
                     {
+                        //Sample 1: src="/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
+                        //Sample 1b: src="https://yourJiraDomain/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
+                        //Sample 2: src="/secure/thumbnail/18777/_thumb_18777.png"
+                        //Sample 2b: src="https://yourJiraDomain/secure/thumbnail/18777/_thumb_18777.png"
                         string imageSrcPattern = $"src.*?=.*?\"([^\"])(?=.*{att.AttOriginId}).*?\"";
                         textField = Regex.Replace(textField, imageSrcPattern, $"src=\"{tfsAtt.Uri.AbsoluteUri}\"");
                         isUpdated = true;
