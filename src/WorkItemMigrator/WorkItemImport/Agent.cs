@@ -403,6 +403,10 @@ namespace WorkItemImport
 
                             if (!string.IsNullOrWhiteSpace(iterationPath))
                             {
+                                //Gérald TANCRAY fixed bug: Fail to import when having invalid characters from sprint names.
+                                //Ref: https://github.com/solidify/jira-azuredevops-migrator/pull/169
+                                iterationPath = Regex.Replace(iterationPath, "[\\/$?*:\"&<>#%|+]", "");
+
                                 EnsureClasification(iterationPath, WebModel.TreeStructureGroup.Iterations);
                                 wi.IterationPath = $@"{Settings.Project}\{iterationPath}".Replace("/", @"\");
                             }
