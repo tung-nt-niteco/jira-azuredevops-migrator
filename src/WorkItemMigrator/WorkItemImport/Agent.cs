@@ -854,6 +854,7 @@ namespace WorkItemImport
                 wi.Fields[CoreField.History].Value = currentComment;
         }
 
+        private string[] nonImgAttachmentExtensions = { ".zip", ".rar", ".pdf", ".txt", ".doc", ".docx", ".xls", ".xlsx", ".csv", ".mp4", ".webm" };
         private void CorrectImagePath(WorkItem wi, WiItem wiItem, WiRevision rev, ref string textField, ref bool isUpdated)
         {
             foreach (var att in wiItem.Revisions.SelectMany(r => r.Attachments.Where(a => a.Change == ReferenceChangeType.Added)))
@@ -869,11 +870,13 @@ namespace WorkItemImport
                 //Ref (related?): https://github.com/solidify/jira-azuredevops-migrator/issues/200
                 //Ref: https://github.com/solidify/jira-azuredevops-migrator/pull/327
                 var encodedFileName = System.Web.HttpUtility.UrlEncode(fileName);
+                var fileExtLower = System.IO.Path.GetExtension(fileName);
+                if (fileExtLower != null) fileExtLower = fileExtLower.Trim().ToLower();
                 if (textField.Contains(fileName) || textField.IndexOf(encodedFileName, StringComparison.OrdinalIgnoreCase) >= 0 || textField.Contains("_thumb_" + att.AttOriginId))                
                 {
                     var tfsAtt = IdentifyAttachment(att, wi);
 
-                    if (tfsAtt != null)
+                    if (tfsAtt != null && !nonImgAttachmentExtensions.Contains(fileExtLower))
                     {
                         //Sample 1: src="/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
                         //Sample 1b: src="https://yourJiraDomain/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
@@ -881,6 +884,14 @@ namespace WorkItemImport
                         //Sample 2b: src="https://yourJiraDomain/secure/thumbnail/18777/_thumb_18777.png"
                         string imageSrcPattern = $"src.*?=.*?\"([^\"])(?=.*{att.AttOriginId}).*?\"";
                         textField = Regex.Replace(textField, imageSrcPattern, $"src=\"{tfsAtt.Uri.AbsoluteUri}\"");
+                        isUpdated = true;
+                    }
+                    //2020-04-30: mahidharguggilam fixed bug: Inline text/pdf/word/excel file attachments inside description/comment are not working
+                    //Ref: https://github.com/solidify/jira-azuredevops-migrator/issues/226 (but here we fixed slightly different ^^)
+                    else if (nonImgAttachmentExtensions.Contains(fileExtLower))
+                    {
+                        string attachmentLinkPattern = $"href.*?=.*?\"([^\"])(?=.*{att.AttOriginId}).*?\"";
+                        textField = Regex.Replace(textField, attachmentLinkPattern, $"href=\"{tfsAtt.Uri.AbsoluteUri}\"");
                         isUpdated = true;
                     }
                     else
