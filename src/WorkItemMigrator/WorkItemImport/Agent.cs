@@ -876,24 +876,27 @@ namespace WorkItemImport
                 {
                     var tfsAtt = IdentifyAttachment(att, wi);
 
-                    if (tfsAtt != null && !nonImgAttachmentExtensions.Contains(fileExtLower))
+                    if (tfsAtt != null)
                     {
-                        //Sample 1: src="/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
-                        //Sample 1b: src="https://yourJiraDomain/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
-                        //Sample 2: src="/secure/thumbnail/18777/_thumb_18777.png"
-                        //Sample 2b: src="https://yourJiraDomain/secure/thumbnail/18777/_thumb_18777.png"
-                        string imageSrcPattern = $"src.*?=.*?\"([^\"])(?=.*{att.AttOriginId}).*?\"";
-                        textField = Regex.Replace(textField, imageSrcPattern, $"src=\"{tfsAtt.Uri.AbsoluteUri}\"");
-                        isUpdated = true;
-                    }
-                    //2020-04-30: mahidharguggilam fixed bug: Inline text/pdf/word/excel file attachments inside description/comment are not working
-                    //Ref: https://github.com/solidify/jira-azuredevops-migrator/issues/226 (but here we fixed slightly different ^^)
-                    else if (nonImgAttachmentExtensions.Contains(fileExtLower))
-                    {
-                        string attachmentLinkPattern = $"href.*?=.*?\"([^\"])(?=.*{att.AttOriginId}).*?\"";
-                        textField = Regex.Replace(textField, attachmentLinkPattern, $"href=\"{tfsAtt.Uri.AbsoluteUri}\"");
-                        isUpdated = true;
-                    }
+                        if (!nonImgAttachmentExtensions.Contains(fileExtLower))
+                        {
+                            //Sample 1: src="/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
+                            //Sample 1b: src="https://yourJiraDomain/secure/attachment/18777/18777_image-2018-04-23-15-33-47-900.png"
+                            //Sample 2: src="/secure/thumbnail/18777/_thumb_18777.png"
+                            //Sample 2b: src="https://yourJiraDomain/secure/thumbnail/18777/_thumb_18777.png"
+                            string imageSrcPattern = $"src.*?=.*?\"([^\"])(?=.*{att.AttOriginId}).*?\"";
+                            textField = Regex.Replace(textField, imageSrcPattern, $"src=\"{tfsAtt.Uri.AbsoluteUri}\"");
+                            isUpdated = true;
+                        }
+                        //2020-04-30: mahidharguggilam fixed bug: Inline text/pdf/word/excel file attachments inside description/comment are not working
+                        //Ref: https://github.com/solidify/jira-azuredevops-migrator/issues/226 (but here we fixed slightly different ^^)
+                        else
+                        {
+                            string attachmentLinkPattern = $"href.*?=.*?\"([^\"])(?=.*{att.AttOriginId}).*?\"";
+                            textField = Regex.Replace(textField, attachmentLinkPattern, $"href=\"{tfsAtt.Uri.AbsoluteUri}\"");
+                            isUpdated = true;
+                        }
+                    }                        
                     else
                         Logger.Log(LogLevel.Warning, $"Attachment '{att.ToString()}' referenced in text but is missing from work item {wiItem.OriginId}/{wi.Id}.");
                 }
