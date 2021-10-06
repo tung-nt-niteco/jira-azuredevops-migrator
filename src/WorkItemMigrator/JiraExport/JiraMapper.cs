@@ -225,7 +225,9 @@ namespace JiraExport
             if (r.Fields.TryGetValue(field, out object value))
             {
                 var parentKeyStr = r.OriginId.Substring(r.OriginId.LastIndexOf("-", StringComparison.InvariantCultureIgnoreCase) + 1);
-                var childKeyStr = value?.ToString().Substring(r.OriginId.LastIndexOf("-", StringComparison.InvariantCultureIgnoreCase) + 1);
+                //Ref: https://github.com/solidify/jira-azuredevops-migrator/issues/275
+                //Ref: https://github.com/solidify/jira-azuredevops-migrator/pull/276/commits/795369dadb14737b9c10d7c4e99b63604f59d5c8
+                var childKeyStr = value?.ToString().Substring((value?.ToString()).LastIndexOf("-", StringComparison.InvariantCultureIgnoreCase) + 1);
 
                 if (int.TryParse(parentKeyStr, out var parentKey) && int.TryParse(childKeyStr, out var childKey))
                 {
