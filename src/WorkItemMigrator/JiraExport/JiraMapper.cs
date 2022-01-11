@@ -485,7 +485,7 @@ namespace JiraExport
         {
             var targetWit = (from t in _config.TypeMap.Types where t.Source == r.Type select t.Target).FirstOrDefault();
 
-            if (r.Fields.TryGetValue(itemSource, out object value))
+            if (r.Fields.TryGetValue(itemSource, out object value) && value != null)
             {
                 foreach (var item in _config.FieldMap.Fields)
                 {

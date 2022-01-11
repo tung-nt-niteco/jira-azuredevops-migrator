@@ -11,8 +11,20 @@ namespace JiraExport
 
             try
             {
+                //Tung Test
+                //args = new string[]
+                //{
+                //    "-u", "tung.nt",
+                //    "-p", "password of Tung",
+                //    "--url", "https://jira.domain/",
+                //    "--config", "D:\\2az\\MigratorConfigGenerator\\config-agile-AH-TungTest.json",
+                //    "--force"
+                //};
+
                 var cmd = new JiraCommandLine(args);
                 cmd.Run();
+
+                //Console.ReadKey();
             }
             catch (Exception ex)
             {
