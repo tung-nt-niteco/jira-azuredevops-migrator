@@ -342,6 +342,9 @@ namespace JiraExport
                             case "MapTitleWithoutKey":
                                 value = r => MapTitleWithoutKey(r);
                                 break;
+                            case "MapTitleWithKeyAsSuffix":
+                                value = r => MapTitleWithKeyAsSuffix(r);
+                                break;
                             case "MapUser":
                                 value = IfChanged<string>(item.Source, isCustomField, MapUser);
                                 break;
@@ -477,6 +480,13 @@ namespace JiraExport
         {
             if (r.Fields.TryGetValue("summary", out object summary))
                 return (true, summary);
+            else
+                return (false, null);
+        }
+        private (bool, object) MapTitleWithKeyAsSuffix(JiraRevision r)
+        {
+            if (r.Fields.TryGetValue("summary", out object summary))
+                return (true, $"{summary} [{r.ParentItem.Key}]");
             else
                 return (false, null);
         }
